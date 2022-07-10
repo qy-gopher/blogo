@@ -6,7 +6,14 @@ import (
 )
 
 func handlerFunc(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "hello blogo!")
+	switch r.URL.Path {
+	case "/":
+		fmt.Fprint(w, "<h1>hello blogo</h1>")
+	case "/about":
+		fmt.Fprint(w, "<h1>blogo可以用来分享信息</h1>")
+	default:
+		fmt.Fprintf(w, "<h1>页面为找到: %s</h1>", r.Host+r.URL.Path)
+	}
 }
 
 func main() {
