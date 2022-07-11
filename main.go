@@ -12,7 +12,8 @@ func handlerFunc(w http.ResponseWriter, r *http.Request) {
 	case "/about":
 		fmt.Fprint(w, "<h1>blogo可以用来分享信息</h1>")
 	default:
-		fmt.Fprintf(w, "<h1>页面为找到: %s</h1>", r.Host+r.URL.Path)
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "<h1>页面未找到: %s</h1>", r.Host+r.URL.Path)
 	}
 }
 
