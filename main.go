@@ -2,11 +2,21 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
+	"net/url"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/gorilla/mux"
 )
+
+type ArticlesFormData struct {
+	Title  string
+	Body   string
+	URL    *url.URL
+	Errors map[string]string
+}
 
 var router = mux.NewRouter()
 
@@ -45,8 +55,63 @@ func articlesStoreHandler(w http.ResponseWriter, r *http.Request) {
 	title := r.PostForm.Get("title")
 	body := r.PostForm.Get("body")
 
-	fmt.Fprintf(w, "title的值为: %v <br>", title)
-	fmt.Fprintf(w, "body的值为: %v", body)
+	errs := make(map[string]string)
+
+	titleLen := utf8.RuneCountInString(title)
+	bodyLen := utf8.RuneCountInString(body)
+
+	if titleLen <= 2 || titleLen >= 40 {
+		errs["title"] = "文章标题要在2到40个字符之间"
+	}
+	if bodyLen <= 10 {
+		errs["body"] = "文章内容要大于10个字符"
+	}
+
+	if len(errs) == 0 {
+		fmt.Fprintf(w, "title的值为: %v <br>", title)
+		fmt.Fprintf(w, "body的值为: %v", body)
+	} else {
+		html := `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>创建文章 —— 我的技术博客</title>
+    <style type="text/css">.error {color: red;}</style>
+</head>
+<body>
+    <form action="{{ .URL }}" method="post">
+        <p><input type="text" name="title" value="{{ .Title }}"></p>
+        {{ with .Errors.title }}
+        <p class="error">{{ . }}</p>
+        {{ end }}
+        <p><textarea name="body" cols="30" rows="10">{{ .Body }}</textarea></p>
+        {{ with .Errors.body }}
+        <p class="error">{{ . }}</p>
+        {{ end }}
+        <p><button type="submit">提交</button></p>
+    </form>
+</body>
+</html>
+        `
+
+		storeURL, _ := router.Get("articles.store").URL()
+		data := ArticlesFormData{
+			Title:  title,
+			Body:   body,
+			URL:    storeURL,
+			Errors: errs,
+		}
+
+		tmpl, err := template.New("create-form").Parse(html)
+		if err != nil {
+			panic(err)
+		}
+
+		err = tmpl.Execute(w, data)
+		if err != nil {
+			panic(err)
+		}
+	}
 }
 
 func articlesCreateHandler(w http.ResponseWriter, r *http.Request) {
