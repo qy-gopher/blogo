@@ -8,20 +8,14 @@ import (
 )
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
 	fmt.Fprint(w, "<h1>Hello blogo</h1>")
 }
 
 func aboutHanher(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "test/html; charset=utf-8")
-
 	fmt.Fprint(w, "<h1>blogo可以用来记录和分享信息</h1>")
 }
 
 func notFoundHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
 	w.WriteHeader(http.StatusNotFound)
 
 	fmt.Fprint(w, "<h1>请求页面未找到</h1>")
@@ -42,6 +36,16 @@ func articlesStoreHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "创建文章页")
 }
 
+func forceHTMLMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// 设置标头
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+		// 继续处理请求
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	router := mux.NewRouter()
 
@@ -53,6 +57,8 @@ func main() {
 	router.HandleFunc("/articles", articlesStoreHandler).Methods("POST").Name("articles.store")
 
 	router.NotFoundHandler = http.HandlerFunc(notFoundHandler)
+
+	router.Use(forceHTMLMiddleware)
 
 	err := http.ListenAndServe(":9090", router)
 	if err != nil {
