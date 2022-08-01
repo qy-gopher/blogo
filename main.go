@@ -1,14 +1,16 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"html/template"
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 	"unicode/utf8"
 
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 )
 
@@ -20,6 +22,35 @@ type ArticlesFormData struct {
 }
 
 var router = mux.NewRouter()
+var db *sql.DB
+
+func initDB() {
+	var err error
+	config := mysql.Config{
+		User:                 "gopher",
+		Passwd:               "123456",
+		Addr:                 "192.168.3.233:3306",
+		Net:                  "tcp",
+		DBName:               "blogo",
+		AllowNativePasswords: true,
+	}
+
+	db, err = sql.Open("mysql", config.FormatDSN())
+	checkError(err)
+
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(25)
+	db.SetConnMaxLifetime(5 * time.Minute)
+
+	err = db.Ping()
+	checkError(err)
+}
+
+func checkError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "<h1>Hello blogo</h1>")
@@ -135,6 +166,7 @@ func removeTrailingSlash(next http.Handler) http.Handler {
 }
 
 func main() {
+	initDB()
 	// router := mux.NewRouter()
 
 	router.HandleFunc("/", homeHandler).Methods("GET").Name("home")
