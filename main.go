@@ -27,9 +27,9 @@ var db *sql.DB
 func initDB() {
 	var err error
 	config := mysql.Config{
-		User:                 "gopher",
+		User:                 "blogo",
 		Passwd:               "123456",
-		Addr:                 "192.168.3.233:3306",
+		Addr:                 "localhost:3306",
 		Net:                  "tcp",
 		DBName:               "blogo",
 		AllowNativePasswords: true,
@@ -163,6 +163,17 @@ func removeTrailingSlash(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+func creatTables() {
+	creatArticlesSQL := `CREATE TABLE IF NOT EXISTS articles(
+    id bigint(20) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    title varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+    body longtext COLLATE utf8mb4_unicode_ci
+);`
+
+	_, err := db.Exec(creatArticlesSQL)
+	checkError(err)
 }
 
 func main() {
