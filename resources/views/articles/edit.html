@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <title></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type="text/css">
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <form action="{{ .URL }}" method="POST">
+        <p><input type="text" name="title" value="{{ .Title }}"></p>
+        {{ with .Errors.title }}
+        <p class="error">{{ . }}</p>
+        {{ end }}
+        <p><textarea name="body" cols="30" rows="10">{{ .Body }}</textarea></p>
+        {{ with .Errors.body }}
+        <p class="error">{{ . }}</p>
+        {{ end }}
+        <p><button type="submit">更新</button></p>
+    </form>
+</body>
+
+</html>
