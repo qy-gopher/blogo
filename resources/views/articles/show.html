@@ -5,11 +5,22 @@
     <title>{{ .Title }} - blogo</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type="text/css">
+        .error {
+            color: red;
+        }
+    </style>
 </head>
 
 <body>
+    <p>ID：{{ .ID }}</p>
     <p>标题：{{ .Title }}</p>
     <p>内容：{{ .Body }}</p>
+
+    {{ $idString := Int64ToString .ID }}
+    <form action="{{ RouteNameToURL "articles.delete" "id" $idString }}" method="POST">
+        <button type="submit" onclick="return confirm('删除动作不可逆，请确认是否继续')">删除</button>
+    </form>
 </body>
 
 </html>
