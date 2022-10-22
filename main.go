@@ -100,7 +100,7 @@ func notFoundHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
-	id := getRouterVariable("id", r)
+	id := route.GetRouteVariable("id", r)
 	article, err := getArticlesByID(id)
 
 	if err != nil {
@@ -208,7 +208,7 @@ func articlesCreateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func articlesEditHandler(w http.ResponseWriter, r *http.Request) {
-	id := getRouterVariable("id", r)
+	id := route.GetRouteVariable("id", r)
 	article, err := getArticlesByID(id)
 
 	if err != nil {
@@ -232,7 +232,7 @@ func articlesEditHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func articlesUpdateHandler(w http.ResponseWriter, r *http.Request) {
-	id := getRouterVariable("id", r)
+	id := route.GetRouteVariable("id", r)
 	_, err := getArticlesByID(id)
 
 	if err != nil {
@@ -281,7 +281,7 @@ func articlesUpdateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func articlesDeleteHandler(w http.ResponseWriter, r *http.Request) {
-	id := getRouterVariable("id", r)
+	id := route.GetRouteVariable("id", r)
 
 	article, err := getArticlesByID(id)
 	if err != nil {
@@ -305,11 +305,6 @@ func articlesDeleteHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-}
-
-func getRouterVariable(param string, r *http.Request) string {
-	vars := mux.Vars(r)
-	return vars[param]
 }
 
 func getArticlesByID(id string) (Article, error) {
