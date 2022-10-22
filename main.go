@@ -84,7 +84,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "<h1>Hello blogo</h1>")
 }
 
-func aboutHanher(w http.ResponseWriter, r *http.Request) {
+func aboutHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "<h1>blogo可以用来记录和分享信息</h1>")
 }
 
@@ -409,7 +409,7 @@ func main() {
 	router = route.Router
 
 	router.HandleFunc("/", homeHandler).Methods("GET").Name("home")
-	router.HandleFunc("/about", aboutHanher).Methods("GET").Name("about")
+	router.HandleFunc("/about", aboutHandler).Methods("GET").Name("about")
 
 	router.HandleFunc("/articles/{id:[0-9]+}", articlesShowHandler).Methods("GET").Name("articles.show")
 	router.HandleFunc("/articles", articlesIndexHandler).Methods("GET").Name("articles.index")
