@@ -8,33 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestHomePage(t *testing.T) {
-	baseURL := "http://localhost:9090"
-
-	var (
-		resp *http.Response
-		err  error
-	)
-	resp, err = http.Get(baseURL + "/")
-
-	assert.NoError(t, err, "有错误")
-	assert.Equal(t, 200, resp.StatusCode, "应返回状态码 200")
-}
-
-func TestAboutPage(t *testing.T) {
-	baseURL := "http://localhost:9090"
-
-	var (
-		resp *http.Response
-		err  error
-	)
-
-	resp, err = http.Get(baseURL + "/about")
-
-	assert.NoError(t, err, "有错误")
-	assert.Equal(t, 200, resp.StatusCode, "应返回状态码 200")
-}
-
 func TestAllPages(t *testing.T) {
 	baseURL := "http://localhost:9090"
 
@@ -48,9 +21,9 @@ func TestAllPages(t *testing.T) {
 		{"GET", "/notfound", 404},
 		{"GET", "/articles", 200},
 		{"GET", "/articles/create", 200},
-		{"GET", "/articles/3", 200},
-		{"GET", "/articles/3/edit", 200},
-		{"POST", "/articles/3", 200},
+		{"GET", "/articles/5", 200},
+		{"GET", "/articles/5/edit", 200},
+		{"POST", "/articles/5", 200},
 		{"POST", "/articles", 200},
 		{"POST", "/articles/111/delete", 404},
 	}

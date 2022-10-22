@@ -14,6 +14,8 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+
+	"github.com/qy-gopher/blogo/pkg/route"
 )
 
 type ArticlesFormData struct {
@@ -52,7 +54,7 @@ func (a *Article) Link() string {
 	return showURL.String()
 }
 
-var router = mux.NewRouter()
+var router *mux.Router
 var db *sql.DB
 
 func initDB() {
@@ -106,7 +108,7 @@ func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
 
 	} else {
 		tmpl, err := template.New("show.html").Funcs(template.FuncMap{
-			"RouteNameToURL": RouteNameToURL,
+			"RouteNameToURL": route.NameToURL,
 			"Int64ToString":  Int64ToString,
 		}).ParseFiles("resources/views/articles/show.html")
 		checkError(err)
@@ -409,16 +411,6 @@ func createTables() {
 	checkError(err)
 }
 
-func RouteNameToURL(routeName string, pairs ...string) string {
-	url, err := router.Get(routeName).URL(pairs...)
-	if err != nil {
-		checkError(err)
-		return ""
-	}
-
-	return url.String()
-}
-
 func Int64ToString(num int64) string {
 	return strconv.FormatInt(num, 10)
 }
@@ -426,7 +418,9 @@ func Int64ToString(num int64) string {
 func main() {
 	initDB()
 	createTables()
-	// router := mux.NewRouter()
+
+	route.Initialize()
+	router = route.Router
 
 	router.HandleFunc("/", homeHandler).Methods("GET").Name("home")
 	router.HandleFunc("/about", aboutHanher).Methods("GET").Name("about")
