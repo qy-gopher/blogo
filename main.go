@@ -16,6 +16,7 @@ import (
 
 	"github.com/qy-gopher/blogo/pkg/logger"
 	"github.com/qy-gopher/blogo/pkg/route"
+	"github.com/qy-gopher/blogo/pkg/types"
 )
 
 type ArticlesFormData struct {
@@ -103,7 +104,7 @@ func articlesShowHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		tmpl, err := template.New("show.html").Funcs(template.FuncMap{
 			"RouteNameToURL": route.NameToURL,
-			"Int64ToString":  Int64ToString,
+			"Int64ToString":  types.Int64ToString,
 		}).ParseFiles("resources/views/articles/show.html")
 		logger.LogError(err)
 
@@ -398,10 +399,6 @@ func createTables() {
 
 	_, err := db.Exec(creatArticlesSQL)
 	logger.LogError(err)
-}
-
-func Int64ToString(num int64) string {
-	return strconv.FormatInt(num, 10)
 }
 
 func main() {
